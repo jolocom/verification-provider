@@ -8,9 +8,10 @@
     "dev": "NODE_ENV=dev node build/main.js",
     "devmon": "NODE_ENV=dev concurrently 'tsc --watch' 'nodemon --watch build build/main.js'",
     "prepare": "tsc",
+    "prepare:watch": "tsc --watch",
     "typings": "typings",
     "prepare-and-test": "npm run prepare && mocha build/**/*.test.js",
-    "test:watch": "NODE_ENV=dev concurrently 'tsc --watch' 'mocha -w build/**/*.test.js'"
+    "test:watch": "mocha -w build/**/*.test.js"
   },
   "author": "",
   "dependencies": {
