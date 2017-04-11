@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 import { EmailVerifier } from './email-verifier';
 
-export function createServer({emailVerifier} : {emailVerifier : EmailVerifier}) {
+export function createApp({emailVerifier} : {emailVerifier : EmailVerifier}) {
   const app = express()
   app.use(bodyParser.urlencoded({extended: true}))
   app.use(bodyParser.json())
