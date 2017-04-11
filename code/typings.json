@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "lodash": "github:typed-typings/npm-lodash#65781ee6b25562ee9b5913043a3ba249acfcee17",
-    "moment": "registry:npm/moment#2.10.5+20160211003958",
-    "object-path": "registry:npm/object-path#0.9.0+20160217162032"
-  }
-}
