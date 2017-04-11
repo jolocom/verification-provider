@@ -3,7 +3,7 @@ import { expect } from 'chai'
 const chaiHttp = require('chai-http')
 chai.use(chaiHttp)
 import { stub } from './test-utils'
-import { createServer } from './server'
+import { createApp } from './app'
 
 describe('Express server', () => {
   it('should dispatch start verification correctly', async function() {
@@ -11,7 +11,7 @@ describe('Express server', () => {
       startVerification: stub()
     }
 
-    await chai['request'](createServer({emailVerifier}))
+    await chai['request'](createApp({emailVerifier}))
       .post('/email/start-verification')
       .send({
         webID: 'my-web-id',
@@ -29,7 +29,7 @@ describe('Express server', () => {
       verify: stub()
     }
 
-    await chai['request'](createServer({emailVerifier}))
+    await chai['request'](createApp({emailVerifier}))
       .post('/email/verify')
       .send({
         webID: 'my-web-id',
