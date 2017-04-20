@@ -6,12 +6,13 @@ import { stub } from './test-utils'
 import { createApp } from './app'
 
 describe('Express server', () => {
-  it('should dispatch start verification correctly', async function() {
+  it('should dispatch start e-mail verification correctly', async function() {
     const emailVerifier : any = {
+      attrType: 'email',
       startVerification: stub()
     }
 
-    await chai['request'](createApp({emailVerifier}))
+    await chai['request'](createApp({emailVerifier, phoneVerifier: <any>{}}))
       .post('/email/start-verification')
       .send({
         webID: 'my-web-id',
@@ -20,16 +21,17 @@ describe('Express server', () => {
     
     expect(emailVerifier.startVerification.calls).to.deep.equal([{args: [{
       userID: 'my-web-id',
-      email: 'my@email.com',
+      attrValue: 'my@email.com',
     }]}])
   })
 
-  it('should dispatch verify correctly', async function() {
+  it('should dispatch e-mail verify correctly', async function() {
     const emailVerifier : any = {
+      attrType: 'email',
       verify: stub()
     }
 
-    await chai['request'](createApp({emailVerifier}))
+    await chai['request'](createApp({emailVerifier, phoneVerifier: <any>{}}))
       .post('/email/verify')
       .send({
         webID: 'my-web-id',
@@ -39,7 +41,7 @@ describe('Express server', () => {
     
     expect(emailVerifier.verify.calls).to.deep.equal([{args: [{
       userID: 'my-web-id',
-      email: 'my@email.com',
+      attrValue: 'my@email.com',
       code: '1234',
     }]}])
   })

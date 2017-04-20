@@ -1,6 +1,7 @@
 import { expect } from 'chai'
+import { stub } from './test-utils'
 import * as mockTransport from 'nodemailer-mock-transport'
-import { EmailConfirmationSender } from './confirmation-sender';
+import { EmailConfirmationSender, SmsConfirmationSender } from './confirmation-sender'
 
 describe('EmailConfirmationSender', () => {
   it('should be able to send a confirmation mail', async () => {
@@ -8,15 +9,15 @@ describe('EmailConfirmationSender', () => {
     const sender = new EmailConfirmationSender({
       transport: transport,
       fromEmail: 'from@test.com',
-      subjectGenerator: ({email, code, userdata}) =>
-        ['subject', email, code, userdata].join(' '),
-      htmlGenerator: ({email, code, userdata}) =>
-        ['html', email, code, userdata].join(' '),
-      textGenerator: ({email, code, userdata}) =>
-        ['text', email, code, userdata].join(' ')
+      subjectGenerator: ({receiver, code, userdata}) =>
+        ['subject', receiver, code, userdata].join(' '),
+      htmlGenerator: ({receiver, code, userdata}) =>
+        ['html', receiver, code, userdata].join(' '),
+      textGenerator: ({receiver, code, userdata}) =>
+        ['text', receiver, code, userdata].join(' ')
     })
     await sender.sendConfirmation({
-      email: 'test@test.com',
+      receiver: 'test@test.com',
       code: '1234',
       userdata: 'usrdata'
     })
@@ -34,5 +35,24 @@ describe('EmailConfirmationSender', () => {
     expect(mail.data.html).to.equal(
       'html test@test.com 1234 usrdata'
     )
+  })
+})
+
+describe('SmsConfirmationSender', () => {
+  it('should work', async () => {
+    const textGenerator = stub()
+    const sms = new SmsConfirmationSender({
+      textGenerator: () => 'test',
+      storeResponse: true
+    })
+
+    await sms.sendConfirmation({
+      receiver: '+49 176 273 437 48',
+      code: 'test',
+      userdata: {}
+    })
+
+    expect(sms.lastResponse.body).to.equal('test')
+    expect(sms.lastResponse.recipients.totalSentCount).to.equal(1)
   })
 })
