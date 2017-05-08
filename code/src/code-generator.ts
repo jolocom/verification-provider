@@ -19,26 +19,13 @@ export class RandomCodeGenerator implements CodeGenerator {
   constructor({codeLength, digitOnly} : {codeLength : number, digitOnly : boolean}) {
     this.codeLength = codeLength
     if (digitOnly) {
-      const max = this.calculateMax(codeLength)
-      const min = this.calculateMin(codeLength)
-      this.randomCode = (Math.floor(Math.random() * (max - min)) + min).toString()
+      const Random = require("random-js")
+      const max = (codeLength === 0) ? 0 : (10 ** codeLength) - 1
+      const min = (codeLength <= 1) ? 0 : 10 ** (codeLength - 1)
+      this.randomCode = Random(Random.engines.mt19937().autoSeed()).integer(min, max).toString()
     } else {
       this.randomCode = randtoken.generate(codeLength)
     }
-  }
-
-  calculateMax(codeLength : number) : number {
-    if (codeLength === 0) return 0
-    let max = 1
-    for (let i = 0; i < codeLength; i++) max *= 10
-    return max - 1
-  }
-
-  calculateMin(codeLength : number) : number {
-    if (codeLength <= 1) return 0
-    let min = 1
-    for (let i = 0; i < codeLength - 1; i++) min *= 10
-    return min
   }
 
   generateCode() : string {
