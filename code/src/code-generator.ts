@@ -35,7 +35,7 @@ export class RandomCodeGenerator implements CodeGenerator {
   }
 
   calculateMin(codeLength : number) : number {
-    if (codeLength < 1) return 0
+    if (codeLength <= 1) return 0
     let min = 1
     for (let i = 0; i < codeLength - 1; i++) min *= 10
     return min
