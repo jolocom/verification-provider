@@ -27,7 +27,7 @@ export function createApp({emailVerifier, phoneVerifier} :
 
     app.post(`/${verifier.attrType}/verify`, async (req, res) => {
       try {
-        const result = await emailVerifier.verify({
+        const result = await verifier.verify({
           userID: req.body.webID,
           attrValue: req.body[verifier.attrType],
           code: req.body.code
