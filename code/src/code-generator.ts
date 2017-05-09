@@ -15,12 +15,17 @@ export class SingleCodeGenerator implements CodeGenerator {
 
 export class RandomCodeGenerator implements CodeGenerator {
   private codeLength : number
+  private digitOnly : boolean
 
-  constructor({codeLength} : {codeLength : number}) {
+  constructor({codeLength, digitOnly} : {codeLength : number, digitOnly : boolean}) {
     this.codeLength = codeLength
+    this.digitOnly = digitOnly
   }
 
   generateCode() : string {
-    return randtoken.generate(16)
+      const elements = this.digitOnly ? '0123456789'
+        : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      return randtoken.generate(this.codeLength, elements)
+
   }
 }

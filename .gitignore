@@ -2,3 +2,4 @@ node_modules
 build/
 messagebird.json
 .vscode
+code/npm-debug.log

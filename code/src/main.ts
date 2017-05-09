@@ -25,7 +25,8 @@ export function main() : Promise<any> {
       }),
       confirmationSender: new MemoryConfirmationSender(),
       codeGenerator: new RandomCodeGenerator({
-          codeLength: 16
+          codeLength: 16,
+          digitOnly : false
       }),
       profile: new MemoryProfileStorage({testUser: 'testContract'})
     }),
@@ -37,12 +38,13 @@ export function main() : Promise<any> {
       }),
       confirmationSender: new MemoryConfirmationSender(),
       codeGenerator: new RandomCodeGenerator({
-          codeLength: 6
+          codeLength: 6,
+          digitOnly : true
       }),
       profile: new MemoryProfileStorage({testUser: 'testContract'})
     })
   })
-  
+
   const server = http.createServer(app)
   return new Promise((resolve, reject) => {
     server.listen(4567, (err) => {
