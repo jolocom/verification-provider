@@ -45,13 +45,15 @@ export async function main() : Promise<any> {
           textGenerator: loadTemplate('verification-email.txt', mustacheTemplateGenerator)
         }),
         codeGenerator: new RandomCodeGenerator({
-            codeLength: 16
+          codeLength: 16,
+          digitOnly: true
         }),
         profile: new MemoryProfileStorage({testUser: 'testContract'})
       }),
       phoneVerifier: new Verifier({
         attrType: 'phone',
-        claims: new EthereumClaimStorage(ethereumConfig),
+        // claims: ethClaimStorage,
+        claims: new MemoryClaimsStorage(),
         verification: new RedisVerificationStorage(redisClient, {
           codeLongevityMs: 1000 * 60 * 60 * 2
         }),
@@ -61,7 +63,8 @@ export async function main() : Promise<any> {
           )
         }),
         codeGenerator: new RandomCodeGenerator({
-            codeLength: 6
+          codeLength: 6,
+          digitOnly: true
         }),
         profile: new MemoryProfileStorage({testUser: 'testContract'})
       })
