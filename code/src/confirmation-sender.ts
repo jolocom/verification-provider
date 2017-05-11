@@ -1,5 +1,8 @@
+import * as fs from 'fs'
+import * as path from 'path'
 import * as nodemailer from 'nodemailer'
 import * as messagebird from 'messagebird'
+import mustache from 'mustache'
 
 export interface ConfirmationSender {
   sendConfirmation(params : {receiver : string, code : string, userdata : any}) : Promise<any>
@@ -16,29 +19,33 @@ export class MemoryConfirmationSender implements ConfirmationSender {
 
 export class EmailConfirmationSender implements ConfirmationSender {
   private transporter
+  private linkGenerator
   private htmlGenerator
   private textGenerator
   private subjectGenerator
   private fromEmail
 
-  constructor({transport, fromEmail, subjectGenerator, htmlGenerator, textGenerator} :
+  constructor({transport, fromEmail, subjectGenerator, linkGenerator, htmlGenerator, textGenerator} :
               {transport : nodemailer.Transport,
                fromEmail : string,
                subjectGenerator : Function,
+               linkGenerator : Function,
                htmlGenerator : Function,
                textGenerator : Function
               }
   ) {
     this.transporter = nodemailer.createTransport(transport)
     this.subjectGenerator = subjectGenerator
+    this.linkGenerator = linkGenerator
     this.htmlGenerator = htmlGenerator
     this.textGenerator = textGenerator
     this.fromEmail = fromEmail
   }
 
   async sendConfirmation(params : {receiver : string, code : string, userdata : any}) {
-    const html = this.htmlGenerator(params)
-    const text = this.textGenerator(params)
+    const link = this.linkGenerator(params)
+    const html = this.htmlGenerator({...params, link})
+    const text = this.textGenerator({...params, link})
     const subject = this.subjectGenerator(params)
 
     this.transporter.sendMail({
@@ -57,7 +64,7 @@ export class SmsConfirmationSender implements ConfirmationSender {
   public lastResponse
 
   constructor({textGenerator, storeResponse = false} :
-              {textGenerator : Function, storeResponse : boolean})
+              {textGenerator : Function, storeResponse? : boolean})
   {
     this.textGenerator = textGenerator
     this.storeResponse = storeResponse
@@ -84,4 +91,25 @@ export class SmsConfirmationSender implements ConfirmationSender {
       this.lastResponse = respone
     }
   }
+}
+
+export function mustacheTemplateGenerator(template : string) {
+  return context => {
+    return mustache.render(template, context)
+  }
+}
+
+export function loadTemplate(name, engine : (template : string) => ((context : object) => string)) {
+  const filePath = path.join(__dirname, '..', '..', 'templates', name)
+  const template = fs.readFileSync(filePath).toString()
+  return engine(template)
+}
+
+export function jolocomEmailLinkGenerator({receiver, code} : {receiver : string, code : string}) : string {
+  return [
+    'https://wallet.jolocom.com/#/verify-email?email=',
+    encodeURIComponent(receiver),
+    '&code=',
+    encodeURIComponent(code)
+  ].join('')
 }

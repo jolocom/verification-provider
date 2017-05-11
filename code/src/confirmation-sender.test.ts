@@ -14,7 +14,8 @@ describe('EmailConfirmationSender', () => {
       htmlGenerator: ({receiver, code, userdata}) =>
         ['html', receiver, code, userdata].join(' '),
       textGenerator: ({receiver, code, userdata}) =>
-        ['text', receiver, code, userdata].join(' ')
+        ['text', receiver, code, userdata].join(' '),
+      linkGenerator: () => ''
     })
     await sender.sendConfirmation({
       receiver: 'test@test.com',
