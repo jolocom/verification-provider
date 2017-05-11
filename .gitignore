@@ -3,4 +3,4 @@ build/
 messagebird.json
 ethereum.json
 .vscode
-code/npm-debug.log
+npm-debug.log
