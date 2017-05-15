@@ -2,12 +2,11 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as nodemailer from 'nodemailer'
 import * as messagebird from 'messagebird'
-import mustache from 'mustache'
+import * as mustache from 'mustache'
 
 export interface ConfirmationSender {
   sendConfirmation(params : {receiver : string, code : string, userdata : any}) : Promise<any>
 }
-
 
 export class MemoryConfirmationSender implements ConfirmationSender {
   public confirmationsSent = []
