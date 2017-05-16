@@ -2,7 +2,6 @@ require('source-map-support').install()
 import * as http from 'http'
 import * as redis from 'redis'
 import * as bluebird from 'bluebird'
-import { MemoryProfileStorage } from './profile-storage'
 import { RandomCodeGenerator } from './code-generator'
 import { 
   MemoryConfirmationSender, EmailConfirmationSender, SmsConfirmationSender,
@@ -47,8 +46,7 @@ export async function main() : Promise<any> {
         codeGenerator: new RandomCodeGenerator({
           codeLength: 16,
           digitOnly: true
-        }),
-        profile: new MemoryProfileStorage({testUser: 'testContract'})
+        })
       }),
       phoneVerifier: new Verifier({
         attrType: 'phone',
@@ -65,8 +63,7 @@ export async function main() : Promise<any> {
         codeGenerator: new RandomCodeGenerator({
           codeLength: 6,
           digitOnly: true
-        }),
-        profile: new MemoryProfileStorage({testUser: 'testContract'})
+        })
       })
     })
   

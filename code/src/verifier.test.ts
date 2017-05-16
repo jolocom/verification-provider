@@ -12,18 +12,17 @@ describe('Verifier', () => {
       attrType: 'email',
       verification: new MemoryVerificationStorage(),
       claims: new MemoryClaimsStorage(),
-      profile: new MemoryProfileStorage({testUser: 'testContract'}),
       confirmationSender: new MemoryConfirmationSender(),
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      userID: 'testUser',
+      contractID: 'testUser',
       attrValue: 'test@test.com'
     })
     expect((<MemoryConfirmationSender>verifier.confirmationSender).confirmationsSent)
       .to.deep.equal([{receiver: 'test@test.com', code: '1234', userdata: null}])
     expect(await verifier.verification.validateCode({
-      userID: 'testUser', attrType: 'email', value: 'test@test.com',
+      contractID: 'testUser', attrType: 'email', value: 'test@test.com',
       code: '1234'
     })).to.equal(true)
   })
@@ -33,30 +32,26 @@ describe('Verifier', () => {
       attrType: 'email',
       verification: new MemoryVerificationStorage(),
       claims: new MemoryClaimsStorage(),
-      profile: new MemoryProfileStorage({testUser: 'testContract'}),
       confirmationSender: new MemoryConfirmationSender(),
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      userID: 'testUser',
+      contractID: 'testUser',
       attrValue: 'test@test.com'
     })
     const result = await verifier.verify({
-      userID: 'testUser',
+      contractID: 'testUser',
       attrValue: 'test@test.com',
       code: '1234'
     })
     expect(result).to.be.true
     expect((<MemoryClaimsStorage>verifier.claims).claims).to.deep.equal([{
       attrType: 'email',
-      contractID: 'testContract',
+      contractID: 'testUser',
       value: 'test@test.com'
     }])
-    expect((<MemoryProfileStorage>verifier.profile).claimIDs['testUser']).to.deep.equal({
-      email: ['1']
-    })
     expect(await verifier.verification.validateCode({
-      userID: 'testUser', attrType: 'email', value: 'test@test.com',
+      contractID: 'testUser', attrType: 'email', value: 'test@test.com',
       code: '1234'
     })).to.equal(false)
   })
@@ -66,16 +61,15 @@ describe('Verifier', () => {
       attrType: 'email',
       verification: new MemoryVerificationStorage(),
       claims: new MemoryClaimsStorage(),
-      profile: new MemoryProfileStorage({testUser: 'testContract'}),
       confirmationSender: new MemoryConfirmationSender(),
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      userID: 'testUser',
+      contractID: 'testUser',
       attrValue: 'test@test.com'
     })
     const result = await verifier.verify({
-      userID: 'testUser',
+      contractID: 'testUser',
       attrValue: 'test@test.com',
       code: '123'
     })

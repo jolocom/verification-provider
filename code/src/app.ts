@@ -19,7 +19,7 @@ export function createApp({emailVerifier, phoneVerifier} :
     app.post(`/${verifier.attrType}/start-verification`, async (req, res) => {
       try {
         await verifier.startVerification({
-          userID: req.body.webID,
+          contractID: req.body.contractID,
           attrValue: req.body[verifier.attrType]
         })
         res.send('OK')
@@ -33,7 +33,7 @@ export function createApp({emailVerifier, phoneVerifier} :
     app.post(`/${verifier.attrType}/verify`, async (req, res) => {
       try {
         const result = await verifier.verify({
-          userID: req.body.webID,
+          contractID: req.body.contractID,
           attrValue: req.body[verifier.attrType],
           code: req.body.code
         })

@@ -15,12 +15,12 @@ describe('Express server', () => {
     await chai['request'](createApp({emailVerifier, phoneVerifier: <any>{}}))
       .post('/email/start-verification')
       .send({
-        webID: 'my-web-id',
+        contractID: 'my-contract-id',
         email: 'my@email.com'
       })
     
     expect(emailVerifier.startVerification.calls).to.deep.equal([{args: [{
-      userID: 'my-web-id',
+      contractID: 'my-contract-id',
       attrValue: 'my@email.com',
     }]}])
   })
@@ -34,13 +34,13 @@ describe('Express server', () => {
     await chai['request'](createApp({emailVerifier, phoneVerifier: <any>{}}))
       .post('/email/verify')
       .send({
-        webID: 'my-web-id',
+        contractID: 'my-contract-id',
         email: 'my@email.com',
         code: '1234'
       })
     
     expect(emailVerifier.verify.calls).to.deep.equal([{args: [{
-      userID: 'my-web-id',
+      contractID: 'my-contract-id',
       attrValue: 'my@email.com',
       code: '1234',
     }]}])
