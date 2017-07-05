@@ -10,13 +10,13 @@ function testVerificationStorage(storageCreator : () => Promise<VerificationStor
   it('should correctly store and validate correct verification codes', async () => {
     const storage = await storageCreator()
     await storage.storeCode({
-      contractID: 'testuser',
+      txHash: 'testuser',
       attrType: 'email',
       value: 'test@test.com',
       code: '1234'
     })
     expect(await storage.validateCode({
-      contractID: 'testuser',
+      txHash: 'testuser',
       attrType: 'email',
       value: 'test@test.com',
       code: '1234'
@@ -26,13 +26,13 @@ function testVerificationStorage(storageCreator : () => Promise<VerificationStor
   it('should correctly store and validate incorrect verification codes', async () => {
     const storage = await storageCreator()
     await storage.storeCode({
-      contractID: 'testuser',
+      txHash: 'testuser',
       attrType: 'email',
       value: 'test@test.com',
       code: '1234'
     })
     expect(await storage.validateCode({
-      contractID: 'testuser',
+      txHash: 'testuser',
       attrType: 'email',
       value: 'test@test.com',
       code: '14'
@@ -42,19 +42,19 @@ function testVerificationStorage(storageCreator : () => Promise<VerificationStor
   it('should correctly delete verification codes', async () => {
     const storage = await storageCreator()
     await storage.storeCode({
-      contractID: 'testuser',
+      txHash: 'testuser',
       attrType: 'email',
       value: 'test@test.com',
       code: '1234'
     })
     await storage.deleteCode({
-      contractID: 'testuser',
+      txHash: 'testuser',
       attrType: 'email',
       value: 'test@test.com',
       code: '1234'
     })
     expect(await storage.validateCode({
-      contractID: 'testuser',
+      txHash: 'testuser',
       attrType: 'email',
       value: 'test@test.com',
       code: '1234'

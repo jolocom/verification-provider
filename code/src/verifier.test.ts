@@ -16,13 +16,13 @@ describe('Verifier', () => {
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      contractID: 'testUser',
+      txHash: 'testUser',
       attrValue: 'test@test.com'
     })
     expect((<MemoryConfirmationSender>verifier.confirmationSender).confirmationsSent)
       .to.deep.equal([{receiver: 'test@test.com', code: '1234', userdata: null}])
     expect(await verifier.verification.validateCode({
-      contractID: 'testUser', attrType: 'email', value: 'test@test.com',
+      txHash: 'testUser', attrType: 'email', value: 'test@test.com',
       code: '1234'
     })).to.equal(true)
   })
@@ -36,22 +36,23 @@ describe('Verifier', () => {
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      contractID: 'testUser',
+      txHash: 'testUser',
       attrValue: 'test@test.com'
     })
     const result = await verifier.verify({
-      contractID: 'testUser',
+      txHash: 'testUser',
       attrValue: 'test@test.com',
+      salt: 'testsalt',
       code: '1234'
     })
     expect(result).to.be.true
     expect((<MemoryClaimsStorage>verifier.claims).claims).to.deep.equal([{
       attrType: 'email',
-      contractID: 'testUser',
+      txHash: 'testUser',
       value: 'test@test.com'
     }])
     expect(await verifier.verification.validateCode({
-      contractID: 'testUser', attrType: 'email', value: 'test@test.com',
+      txHash: 'testUser', attrType: 'email', value: 'test@test.com',
       code: '1234'
     })).to.equal(false)
   })
@@ -65,12 +66,13 @@ describe('Verifier', () => {
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      contractID: 'testUser',
+      txHash: 'testUser',
       attrValue: 'test@test.com'
     })
     const result = await verifier.verify({
-      contractID: 'testUser',
+      txHash: 'testUser',
       attrValue: 'test@test.com',
+      salt: 'testsalt',
       code: '123'
     })
     expect(result).to.equal(false)

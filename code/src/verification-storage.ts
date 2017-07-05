@@ -3,17 +3,17 @@ import { AttributeType } from './types'
 
 export interface VerificationStorage {
   storeCode(params : {
-    contractID : string, attrType : AttributeType,
+    txHash : string, attrType : AttributeType,
     value : string, code : string
   }) : Promise<any>
 
   validateCode(params : {
-    contractID : string, attrType : AttributeType,
+    txHash : string, attrType : AttributeType,
     value : string, code : string
   }) : Promise<boolean>
   
   deleteCode(params : {
-    contractID : string, attrType : AttributeType,
+    txHash : string, attrType : AttributeType,
     value : string, code : string
   }) : Promise<any>
 }
@@ -22,26 +22,26 @@ export class MemoryVerificationStorage implements VerificationStorage {
   private codes : any = {}
 
   async storeCode(params : {
-    contractID : string, attrType : AttributeType, value : string, code : string
+    txHash : string, attrType : AttributeType, value : string, code : string
   }) : Promise<any> {
     this.codes[this._combinedKey(params)] = params.code
   }
 
   async validateCode(params : {
-    contractID : string, attrType : AttributeType, value : string, code : string
+    txHash : string, attrType : AttributeType, value : string, code : string
   }) : Promise<boolean> {
     const validCode = this.codes[this._combinedKey(params)]
     return params.code === validCode
   }
 
   async deleteCode(params : {
-    contractID : string, attrType : AttributeType, value : string, code : string
+    txHash : string, attrType : AttributeType, value : string, code : string
   }) : Promise<any> {
     delete this.codes[this._combinedKey(params)]
   }
 
-  private _combinedKey(params : {contractID : string, attrType : AttributeType, value : string}) {
-    return params.contractID + '_' + params.attrType + '_' + params.value
+  private _combinedKey(params : {txHash : string, attrType : AttributeType, value : string}) {
+    return params.txHash + '_' + params.attrType + '_' + params.value
   }
 }
 
@@ -53,7 +53,7 @@ export class RedisVerificationStorage implements VerificationStorage {
   }
 
   async storeCode(params : {
-    contractID : string, attrType : AttributeType, value : string, code : string
+    txHash : string, attrType : AttributeType, value : string, code : string
   }) : Promise<any> {
     const expires : number = (new Date().getTime() + this.codeLongevityMs)
     const key = this.keyFromParams(params)
@@ -63,7 +63,7 @@ export class RedisVerificationStorage implements VerificationStorage {
   }
 
   async validateCode(params : {
-    contractID : string, attrType : AttributeType, value : string, code : string
+    txHash : string, attrType : AttributeType, value : string, code : string
   }) : Promise<boolean> {
     const key = this.keyFromParams(params)
     const storedCode = await this.redisClient.getAsync(key)
@@ -71,18 +71,18 @@ export class RedisVerificationStorage implements VerificationStorage {
   }
 
   async deleteCode(params : {
-    contractID : string, attrType : AttributeType, value : string, code : string
+    txHash : string, attrType : AttributeType, value : string, code : string
   }) : Promise<any> {
     const key = this.keyFromParams(params)
     await this.redisClient.delAsync(key)
   }
 
   keyFromParams(params : {
-    contractID : string, attrType : AttributeType, value : string
+    txHash : string, attrType : AttributeType, value : string
   }) {
     return [
       'jolocom-verification-codes',
-      params.contractID,
+      params.txHash,
       params.attrType,
       params.value
     ].join(':')

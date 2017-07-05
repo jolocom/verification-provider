@@ -14,12 +14,12 @@ export function createApp({emailVerifier, phoneVerifier} :
     next()
   })
 
-  const verifiers = [emailVerifier, phoneVerifier]
-  verifiers.forEach(verifier => {
+  const verifiers : Verifier[] = [emailVerifier, phoneVerifier]
+  verifiers.forEach((verifier : Verifier) => {
     app.post(`/${verifier.attrType}/start-verification`, async (req, res) => {
       try {
         await verifier.startVerification({
-          contractID: req.body.contractID,
+          txHash: req.body.txHash,
           attrValue: req.body[verifier.attrType]
         })
         res.send('OK')
@@ -33,8 +33,9 @@ export function createApp({emailVerifier, phoneVerifier} :
     app.post(`/${verifier.attrType}/verify`, async (req, res) => {
       try {
         const result = await verifier.verify({
-          contractID: req.body.contractID,
+          txHash: req.body.txHash,
           attrValue: req.body[verifier.attrType],
+          salt: req.body.salt,
           code: req.body.code
         })
 
