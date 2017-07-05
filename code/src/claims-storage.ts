@@ -55,9 +55,9 @@ export class EthereumClaimStorage implements ClaimsStorage {
       phone: ''
     }[params.attrType]
 
-    const transaction = this._wallet.getTransaction(params.txHash)
+    const transaction = await this._wallet.getTransaction(params.txHash)
     const walletAddress = transaction.from
-    const identityAddress = this._wallet.getIdentityAddressFromLookupContract(walletAddress)
+    const identityAddress = await this._wallet.getIdentityAddressFromLookupContract(walletAddress)
     const calculatedVerificationHash = this._wallet.walletCrypto.sha256(
       params.value + params.salt
     )
@@ -101,11 +101,13 @@ export class EthereumClaimStorage implements ClaimsStorage {
       )
     }
 
-    await this._wallet.addVerificationToTargetIdentity({
-      targetIdentityAddress: identityAddress,
-      attributeId: params.attrType,
-      pin: this._config.password,
-    })
+    await this._wallet.waitingToBeMined(
+      await this._wallet.addVerificationToTargetIdentity({
+        targetIdentityAddress: identityAddress,
+        attributeId: params.attrType,
+        pin: this._config.password,
+      })
+    )
 
     return {claimID: 'dummy'}
   }
