@@ -45,18 +45,26 @@ export class Verifier {
                {identity : string, attrId : string, attrValue : string,
                 code : string}) : Promise<boolean>
   {
+    // console.log(1)
     const valid = await this.verification.validateCode({
       identity, attrType: this.attrType, attrId, value: attrValue, code
     })
+    // console.log(2)
     if (!valid) {
       return false
     }
+    // console.log(3)
     await this.claims.verifyAttribute({
-      identity, attrType: this.attrType, attrId, value: attrValue
+      identity, attrType: this.attrType, attrId,
+      value: this.attrType === 'phone'
+        ? JSON.stringify([['type', attrValue.split('.')[0]], ['value', attrValue.split('.')[1]]])
+        : JSON.stringify([['value', attrValue]])
     })
+    // console.log(4)
     await this.verification.deleteCode({
       identity, attrType: this.attrType, attrId, value: attrValue, code
     })
+    // console.log(5)
     return true
   }
 }

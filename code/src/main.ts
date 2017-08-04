@@ -3,6 +3,7 @@ import * as http from 'http'
 import * as redis from 'redis'
 import * as bluebird from 'bluebird'
 import * as request from 'request-promise-native'
+import * as URL from 'url-parse'
 import { RandomCodeGenerator } from './code-generator'
 import { 
   MemoryConfirmationSender, EmailConfirmationSender, SmsConfirmationSender,
@@ -22,17 +23,17 @@ export async function main() : Promise<any> {
 
   const config = require('../config.json')
   const gatewayClaimStorage = new GatewayClaimStorage({
+    identityURL: config.gateway.identityURL,
     seedPhrase: config.gateway.seedPhrase,
     createGatewaySession: async () => {
       const cookieJar = request.jar()
       const req = request.defaults({
-        jar: cookieJar,
-        baseURL: config.gateway.identity
+        jar: cookieJar
       })
-      
+
       await req({
         method: 'POST',
-        uri: '/login',
+        uri: new URL(config.gateway.identityURL).origin + '/login',
         form: {seedPhrase: config.gateway.seedPhrase}
       })
 
@@ -45,7 +46,7 @@ export async function main() : Promise<any> {
       emailVerifier: new Verifier({
         attrType: 'email',
         // claims: ethClaimStorage,
-        claims: new MemoryClaimsStorage(),
+        claims: gatewayClaimStorage,
         verification: new RedisVerificationStorage(redisClient, {
           codeLongevityMs: 1000 * 60 * 60 * 2
         }),
@@ -68,8 +69,7 @@ export async function main() : Promise<any> {
       }),
       phoneVerifier: new Verifier({
         attrType: 'phone',
-        // claims: ethClaimStorage,
-        claims: new MemoryClaimsStorage(),
+        claims: gatewayClaimStorage,
         verification: new RedisVerificationStorage(redisClient, {
           codeLongevityMs: 1000 * 60 * 60 * 2
         }),

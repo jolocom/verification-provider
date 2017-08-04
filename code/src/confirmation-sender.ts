@@ -47,6 +47,8 @@ export class EmailConfirmationSender implements ConfirmationSender {
     const text = this.textGenerator({...params, link})
     const subject = this.subjectGenerator(params)
 
+    // console.log(params.code)
+
     this.transporter.sendMail({
       from: this.fromEmail,
       to: params.receiver,

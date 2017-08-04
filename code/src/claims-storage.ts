@@ -24,13 +24,16 @@ export type GatewaySessionCreator = () => Promise<any>
 export class GatewayClaimStorage implements ClaimsStorage {
   private _createGatewaySession : GatewaySessionCreator
   private _seedPhrase : string
+  private _identityURL : string
 
-  constructor({createGatewaySession, seedPhrase} :
+  constructor({createGatewaySession, seedPhrase, identityURL} :
               {createGatewaySession : GatewaySessionCreator,
+               identityURL : string,
                seedPhrase : string})
   {
     this._createGatewaySession = createGatewaySession
     this._seedPhrase = seedPhrase
+    this._identityURL = identityURL
   }
 
   async verifyAttribute({identity, attrType, attrId, value} :
@@ -38,7 +41,7 @@ export class GatewayClaimStorage implements ClaimsStorage {
                         ) : Promise<any>
   {
     const session = await this._createGatewaySession()
-    const res = await session.post('/check', {
+    const res = await session.post(`${this._identityURL}/verify`, {
       form: {
         seedPhrase: this._seedPhrase,
         identity,

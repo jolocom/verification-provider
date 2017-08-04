@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run prepare && npm run dev --",
     "dev": "NODE_ENV=dev node build/main.js",
-    "devmon": "NODE_ENV=dev concurrently 'tsc --watch' 'nodemon --watch build build/main.js'",
+    "devmon": "nodemon --watch build build/main.js",
     "prepare": "tsc",
     "prepare:watch": "tsc --watch",
     "typings": "typings",
@@ -34,6 +34,7 @@
     "request-promise-native": "^1.0.4",
     "smartwallet-contracts": "jolocom/smartwallet-contracts",
     "source-map-support": "^0.4.0",
+    "url-parse": "^1.1.9",
     "yargs": "^4.2.0"
   },
   "devDependencies": {
