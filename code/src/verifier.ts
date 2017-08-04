@@ -31,29 +31,31 @@ export class Verifier {
     this.attrType = params.attrType
   }
 
-  async startVerification({txHash, attrValue} :
-                          {txHash : string, attrValue : string}) : Promise<any>
+  async startVerification({identity, attrId, attrValue} :
+                          {identity, attrId, attrValue : string}) : Promise<any>
   {
     const code = this.codeGenerator.generateCode()
     await this.verification.storeCode({
-      txHash, attrType: this.attrType, value: attrValue, code
+      identity, attrType: this.attrType, attrId, value: attrValue, code
     })
     await this.confirmationSender.sendConfirmation({receiver: attrValue, code, userdata: null})
   }
 
-  async verify({txHash, attrValue, salt, code} :
-               {txHash : string, attrValue : string, salt : string, code : string}) : Promise<boolean> {
+  async verify({identity, attrId, attrValue, code} :
+               {identity : string, attrId : string, attrValue : string,
+                code : string}) : Promise<boolean>
+  {
     const valid = await this.verification.validateCode({
-      txHash, attrType: this.attrType, value: attrValue, code
+      identity, attrType: this.attrType, attrId, value: attrValue, code
     })
     if (!valid) {
       return false
     }
-    const {claimID} = await this.claims.verifyAttribute({
-      txHash, attrType: this.attrType, salt, value: attrValue
+    await this.claims.verifyAttribute({
+      identity, attrType: this.attrType, attrId, value: attrValue
     })
     await this.verification.deleteCode({
-      txHash, attrType: this.attrType, value: attrValue, code
+      identity, attrType: this.attrType, attrId, value: attrValue, code
     })
     return true
   }

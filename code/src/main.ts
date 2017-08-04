@@ -2,13 +2,14 @@ require('source-map-support').install()
 import * as http from 'http'
 import * as redis from 'redis'
 import * as bluebird from 'bluebird'
+import * as request from 'request-promise-native'
 import { RandomCodeGenerator } from './code-generator'
 import { 
   MemoryConfirmationSender, EmailConfirmationSender, SmsConfirmationSender,
   mustacheTemplateGenerator, loadTemplate, jolocomEmailLinkGenerator
 } from './confirmation-sender'
 import { RedisVerificationStorage } from './verification-storage'
-import { MemoryClaimsStorage, EthereumClaimStorage } from './claims-storage'
+import { MemoryClaimsStorage, GatewayClaimStorage } from './claims-storage'
 import { Verifier } from './verifier'
 import { createApp } from './app'
 
@@ -19,8 +20,25 @@ export async function main() : Promise<any> {
   const redisClient = redis.createClient()
   bluebird.promisifyAll(redisClient)
 
-  // const ethereumConfig = require('../ethereum.json')
-  // const ethClaimStorage = await (new EthereumClaimStorage(ethereumConfig)).initialize()
+  const config = require('../config.json')
+  const gatewayClaimStorage = new GatewayClaimStorage({
+    seedPhrase: config.gateway.seedPhrase,
+    createGatewaySession: async () => {
+      const cookieJar = request.jar()
+      const req = request.defaults({
+        jar: cookieJar,
+        baseURL: config.gateway.identity
+      })
+      
+      await req({
+        method: 'POST',
+        uri: '/login',
+        form: {seedPhrase: config.gateway.seedPhrase}
+      })
+
+      return req
+    }
+  })
   
   try {
     const app = createApp({
@@ -56,6 +74,7 @@ export async function main() : Promise<any> {
           codeLongevityMs: 1000 * 60 * 60 * 2
         }),
         confirmationSender: new SmsConfirmationSender({
+          ...config.messageBird,
           textGenerator: mustacheTemplateGenerator(
             'Your SmartWallet verification code: {code}'
           )

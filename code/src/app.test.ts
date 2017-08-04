@@ -15,12 +15,14 @@ describe('Express server', () => {
     await chai['request'](createApp({emailVerifier, phoneVerifier: <any>{}}))
       .post('/email/start-verification')
       .send({
-        contractID: 'my-contract-id',
+        identity: 'https://identity.jolocom.com/verifiyee',
+        id: 'primary',
         email: 'my@email.com'
       })
     
     expect(emailVerifier.startVerification.calls).to.deep.equal([{args: [{
-      contractID: 'my-contract-id',
+      identity: 'https://identity.jolocom.com/verifiyee',
+      attrId: 'primary',
       attrValue: 'my@email.com',
     }]}])
   })
@@ -34,13 +36,15 @@ describe('Express server', () => {
     await chai['request'](createApp({emailVerifier, phoneVerifier: <any>{}}))
       .post('/email/verify')
       .send({
-        contractID: 'my-contract-id',
+        identity: 'https://identity.jolocom.com/verifiyee',
+        id: 'primary',
         email: 'my@email.com',
         code: '1234'
       })
     
     expect(emailVerifier.verify.calls).to.deep.equal([{args: [{
-      contractID: 'my-contract-id',
+      identity: 'https://identity.jolocom.com/verifiyee',
+      attrId: 'primary',
       attrValue: 'my@email.com',
       code: '1234',
     }]}])

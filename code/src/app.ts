@@ -19,7 +19,8 @@ export function createApp({emailVerifier, phoneVerifier} :
     app.post(`/${verifier.attrType}/start-verification`, async (req, res) => {
       try {
         await verifier.startVerification({
-          txHash: req.body.txHash,
+          identity: req.body.identity,
+          attrId: req.body.id,
           attrValue: req.body[verifier.attrType]
         })
         res.send('OK')
@@ -33,9 +34,9 @@ export function createApp({emailVerifier, phoneVerifier} :
     app.post(`/${verifier.attrType}/verify`, async (req, res) => {
       try {
         const result = await verifier.verify({
-          txHash: req.body.txHash,
+          identity: req.body.identity,
+          attrId: req.body.id,
           attrValue: req.body[verifier.attrType],
-          salt: req.body.salt,
           code: req.body.code
         })
 

@@ -10,14 +10,16 @@ function testVerificationStorage(storageCreator : () => Promise<VerificationStor
   it('should correctly store and validate correct verification codes', async () => {
     const storage = await storageCreator()
     await storage.storeCode({
-      txHash: 'testuser',
+      identity: 'http://identity.jolocom.com/user',
       attrType: 'email',
+      attrId: 'primary',
       value: 'test@test.com',
       code: '1234'
     })
     expect(await storage.validateCode({
-      txHash: 'testuser',
+      identity: 'http://identity.jolocom.com/user',
       attrType: 'email',
+      attrId: 'primary',
       value: 'test@test.com',
       code: '1234'
     })).to.equal(true)
@@ -26,14 +28,16 @@ function testVerificationStorage(storageCreator : () => Promise<VerificationStor
   it('should correctly store and validate incorrect verification codes', async () => {
     const storage = await storageCreator()
     await storage.storeCode({
-      txHash: 'testuser',
+      identity: 'http://identity.jolocom.com/user',
       attrType: 'email',
+      attrId: 'primary',
       value: 'test@test.com',
       code: '1234'
     })
     expect(await storage.validateCode({
-      txHash: 'testuser',
+      identity: 'http://identity.jolocom.com/user',
       attrType: 'email',
+      attrId: 'primary',
       value: 'test@test.com',
       code: '14'
     })).to.equal(false)
@@ -42,20 +46,23 @@ function testVerificationStorage(storageCreator : () => Promise<VerificationStor
   it('should correctly delete verification codes', async () => {
     const storage = await storageCreator()
     await storage.storeCode({
-      txHash: 'testuser',
+      identity: 'http://identity.jolocom.com/user',
       attrType: 'email',
+      attrId: 'primary',
       value: 'test@test.com',
       code: '1234'
     })
     await storage.deleteCode({
-      txHash: 'testuser',
+      identity: 'http://identity.jolocom.com/user',
       attrType: 'email',
+      attrId: 'primary',
       value: 'test@test.com',
       code: '1234'
     })
     expect(await storage.validateCode({
-      txHash: 'testuser',
+      identity: 'http://identity.jolocom.com/user',
       attrType: 'email',
+      attrId: 'primary',
       value: 'test@test.com',
       code: '1234'
     })).to.equal(false)

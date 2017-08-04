@@ -1,6 +1,5 @@
 node_modules
 build/
-messagebird.json
-ethereum.json
+config.json
 .vscode
 npm-debug.log

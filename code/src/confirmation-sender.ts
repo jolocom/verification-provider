@@ -58,20 +58,22 @@ export class EmailConfirmationSender implements ConfirmationSender {
 }
 
 export class SmsConfirmationSender implements ConfirmationSender {
+  private key
   private textGenerator
   private storeResponse
   public lastResponse
 
-  constructor({textGenerator, storeResponse = false} :
-              {textGenerator : Function, storeResponse? : boolean})
+  constructor({key, textGenerator, storeResponse = false} :
+              {key : string, textGenerator : Function, storeResponse? : boolean})
   {
+    this.key = key
     this.textGenerator = textGenerator
     this.storeResponse = storeResponse
     this.lastResponse = null
   }
 
   async sendConfirmation(params : {receiver : string, code : string, userdata : any}) {
-    const bird = messagebird(require('../messagebird.json').key)
+    const bird = messagebird(this.key)
     const message = {
       'originator': 'SmartWallet',
       'recipients': [

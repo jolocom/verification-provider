@@ -43,6 +43,7 @@ describe('SmsConfirmationSender', () => {
   it('should work', async () => {
     const textGenerator = stub()
     const sms = new SmsConfirmationSender({
+      key: 'iNjYHCR0NK0YPp5xnBQPs1nb2',
       textGenerator: () => 'test',
       storeResponse: true
     })

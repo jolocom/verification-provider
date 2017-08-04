@@ -16,13 +16,16 @@ describe('Verifier', () => {
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      txHash: 'testUser',
+      identity: 'http://identity.jolocom.com',
+      attrId: 'primary',
       attrValue: 'test@test.com'
     })
     expect((<MemoryConfirmationSender>verifier.confirmationSender).confirmationsSent)
       .to.deep.equal([{receiver: 'test@test.com', code: '1234', userdata: null}])
     expect(await verifier.verification.validateCode({
-      txHash: 'testUser', attrType: 'email', value: 'test@test.com',
+      identity: 'http://identity.jolocom.com',
+      attrType: 'email', attrId: 'primary',
+      value: 'test@test.com',
       code: '1234'
     })).to.equal(true)
   })
@@ -36,23 +39,28 @@ describe('Verifier', () => {
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      txHash: 'testUser',
+      identity: 'https://identity.jolocom.com',
+      attrId: 'primary',
       attrValue: 'test@test.com'
     })
     const result = await verifier.verify({
-      txHash: 'testUser',
+      identity: 'https://identity.jolocom.com',
+      attrId: 'primary',
       attrValue: 'test@test.com',
-      salt: 'testsalt',
       code: '1234'
     })
     expect(result).to.be.true
     expect((<MemoryClaimsStorage>verifier.claims).claims).to.deep.equal([{
+      identity: 'https://identity.jolocom.com',
+      attrId: 'primary',
       attrType: 'email',
-      txHash: 'testUser',
       value: 'test@test.com'
     }])
     expect(await verifier.verification.validateCode({
-      txHash: 'testUser', attrType: 'email', value: 'test@test.com',
+      identity: 'https://identity.jolocom.com',
+      attrType: 'email',
+      attrId: 'primary',
+      value: 'test@test.com',
       code: '1234'
     })).to.equal(false)
   })
@@ -66,13 +74,14 @@ describe('Verifier', () => {
       codeGenerator: new SingleCodeGenerator('1234'),
     })
     await verifier.startVerification({
-      txHash: 'testUser',
+      identity: 'https://identity.jolocom.com',
+      attrId: 'primary',
       attrValue: 'test@test.com'
     })
     const result = await verifier.verify({
-      txHash: 'testUser',
+      identity: 'https://identity.jolocom.com',
+      attrId: 'primary',
       attrValue: 'test@test.com',
-      salt: 'testsalt',
       code: '123'
     })
     expect(result).to.equal(false)
