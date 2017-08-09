@@ -76,7 +76,7 @@ export async function main() : Promise<any> {
         confirmationSender: new SmsConfirmationSender({
           ...config.messageBird,
           textGenerator: mustacheTemplateGenerator(
-            'Your SmartWallet verification code: {code}'
+            'Your SmartWallet verification code: {{code}}'
           )
         }),
         codeGenerator: new RandomCodeGenerator({
@@ -85,7 +85,7 @@ export async function main() : Promise<any> {
         })
       })
     })
-  
+
     const server = http.createServer(app)
     return await new Promise((resolve, reject) => {
       server.listen(4567, (err) => {
