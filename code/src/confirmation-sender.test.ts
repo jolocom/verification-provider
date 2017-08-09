@@ -19,6 +19,7 @@ describe('EmailConfirmationSender', () => {
     })
     await sender.sendConfirmation({
       receiver: 'test@test.com',
+      id: 'id1',
       code: '1234',
       userdata: 'usrdata'
     })

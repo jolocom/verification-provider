@@ -38,7 +38,7 @@ export class Verifier {
     await this.verification.storeCode({
       identity, attrType: this.attrType, attrId, value: attrValue, code
     })
-    await this.confirmationSender.sendConfirmation({receiver: attrValue, code, userdata: null})
+    await this.confirmationSender.sendConfirmation({receiver: attrValue, id: attrId, code, userdata: null})
   }
 
   async verify({identity, attrId, attrValue, code} :

@@ -5,7 +5,7 @@ import * as messagebird from 'messagebird'
 import * as mustache from 'mustache'
 
 export interface ConfirmationSender {
-  sendConfirmation(params : {receiver : string, code : string, userdata : any}) : Promise<any>
+  sendConfirmation(params : {receiver : string, id : string, code : string, userdata : any}) : Promise<any>
 }
 
 export class MemoryConfirmationSender implements ConfirmationSender {
@@ -41,15 +41,13 @@ export class EmailConfirmationSender implements ConfirmationSender {
     this.fromEmail = fromEmail
   }
 
-  async sendConfirmation(params : {receiver : string, code : string, userdata : any}) {
+  async sendConfirmation(params : {receiver : string, id : string, code : string, userdata : any}) {
     const link = this.linkGenerator(params)
     const html = this.htmlGenerator({...params, link})
     const text = this.textGenerator({...params, link})
     const subject = this.subjectGenerator(params)
 
-    // console.log(params.code)
-
-    this.transporter.sendMail({
+    await this.transporter.sendMail({
       from: this.fromEmail,
       to: params.receiver,
       subject: subject,
@@ -108,10 +106,14 @@ export function loadTemplate(name, engine : (template : string) => ((context : o
   return engine(template)
 }
 
-export function jolocomEmailLinkGenerator({receiver, code} : {receiver : string, code : string}) : string {
+export function jolocomEmailLinkGenerator({receiver, id, code} :
+                                          {receiver : string, id : string, code : string}) : string
+{
   return [
     'https://wallet.jolocom.com/#/verify-email?email=',
     encodeURIComponent(receiver),
+    '&id=',
+    encodeURIComponent(id),
     '&code=',
     encodeURIComponent(code)
   ].join('')
