@@ -110,7 +110,7 @@ export function jolocomEmailLinkGenerator({receiver, id, code} :
                                           {receiver : string, id : string, code : string}) : string
 {
   return [
-    'https://wallet.jolocom.com/#/verify-email?email=',
+    'https://staging.wallet.jolocom.com/#/verify-email?email=',
     encodeURIComponent(receiver),
     '&id=',
     encodeURIComponent(id),
