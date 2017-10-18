@@ -56,7 +56,7 @@ export async function main() : Promise<any> {
             newline: 'unix',
             path: '/usr/sbin/sendmail'
           },
-          fromEmail: 'no-reply@jolocom.com',
+          fromEmail: 'no-reply@mail.jolocom.com',
           subjectGenerator: mustacheTemplateGenerator('Verify your e-mail in your SmartWallet'),
           linkGenerator: jolocomEmailLinkGenerator,
           htmlGenerator: loadTemplate('verification-email.html', mustacheTemplateGenerator),
