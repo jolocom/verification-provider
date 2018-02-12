@@ -1,10 +1,14 @@
-const express = require('express')
-const bodyParser = require('body-parser')
+import * as express from 'express'
+import * as bodyParser from 'body-parser'
 import { Verifier } from './verifier';
 
-export function createApp({emailVerifier, phoneVerifier} :
-                          {emailVerifier : Verifier, phoneVerifier : Verifier})
-{
+export function createApp({
+  emailVerifier,
+  phoneVerifier
+} : {
+  emailVerifier : Verifier,
+  phoneVerifier : Verifier
+}) {
   const app = express()
   app.use(bodyParser.urlencoded({extended: true}))
   app.use(bodyParser.json())
@@ -31,7 +35,7 @@ export function createApp({emailVerifier, phoneVerifier} :
       }
     })
 
-    app.post(`/${verifier.attrType}/verify`, async (req, res) => {
+    app.post(`/${verifier.attrType}/finish-verification`, async (req, res) => {
       try {
         const result = await verifier.verify({
           identity: req.body.identity,
@@ -52,6 +56,5 @@ export function createApp({emailVerifier, phoneVerifier} :
       }
     })
   })
-
   return app
 }

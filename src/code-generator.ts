@@ -23,8 +23,10 @@ export class RandomCodeGenerator implements CodeGenerator {
   }
 
   generateCode() : string {
-    const elements = this.digitOnly ? '0123456789'
+    const elements = this.digitOnly 
+      ? '0123456789'
       : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  
     return randtoken.generate(this.codeLength, elements)
   }
 }

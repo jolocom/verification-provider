@@ -24,15 +24,21 @@ export class EmailConfirmationSender implements ConfirmationSender {
   private subjectGenerator
   private fromEmail
 
-  constructor({transport, fromEmail, subjectGenerator, linkGenerator, htmlGenerator, textGenerator} :
-              {transport : nodemailer.Transport,
-               fromEmail : string,
-               subjectGenerator : Function,
-               linkGenerator : Function,
-               htmlGenerator : Function,
-               textGenerator : Function
-              }
-  ) {
+  constructor({
+    transport, 
+    fromEmail, 
+    subjectGenerator, 
+    linkGenerator, 
+    htmlGenerator, 
+    textGenerator
+  } : {
+    transport : nodemailer.Transport,
+    fromEmail : string,
+    subjectGenerator : Function,
+    linkGenerator : Function,
+    htmlGenerator : Function,
+    textGenerator : Function
+  }) {
     this.transporter = nodemailer.createTransport(transport)
     this.subjectGenerator = subjectGenerator
     this.linkGenerator = linkGenerator
@@ -63,17 +69,30 @@ export class SmsConfirmationSender implements ConfirmationSender {
   private storeResponse
   public lastResponse
 
-  constructor({key, textGenerator, storeResponse = false} :
-              {key : string, textGenerator : Function, storeResponse? : boolean})
-  {
+  constructor({
+    key, 
+    textGenerator, 
+    storeResponse = false
+  } : {
+    key : string, 
+    textGenerator : Function, 
+    storeResponse? : boolean
+  }) {
     this.key = key
     this.textGenerator = textGenerator
     this.storeResponse = storeResponse
     this.lastResponse = null
   }
 
-  async sendConfirmation(params : {receiver : string, code : string, userdata : any}) {
+  async sendConfirmation(params : {
+    receiver : string,
+    code : string,
+    userdata : any
+  }) {
     const bird = messagebird(this.key)
+    console.log(params.receiver)
+    console.log(params.receiver)
+    console.log(params.receiver)
     const message = {
       'originator': 'SmartWallet',
       'recipients': [
@@ -82,14 +101,15 @@ export class SmsConfirmationSender implements ConfirmationSender {
       'body': this.textGenerator(params)
     }
 
-    const respone = await new Promise((resolve, reject) => {
+    const response = await new Promise((resolve, reject) => {
       bird.messages.create(message, (err, response) => {
         if (err) return reject(err)
         resolve(response)
       })
     })
+
     if (this.storeResponse) {
-      this.lastResponse = respone
+      this.lastResponse = response
     }
   }
 }
@@ -101,14 +121,20 @@ export function mustacheTemplateGenerator(template : string) {
 }
 
 export function loadTemplate(name, engine : (template : string) => ((context : object) => string)) {
-  const filePath = path.join(__dirname, '..', '..', 'templates', name)
+  const filePath = path.join(__dirname, '..', 'templates', name)
   const template = fs.readFileSync(filePath).toString()
   return engine(template)
 }
 
-export function jolocomEmailLinkGenerator({receiver, id, code} :
-                                          {receiver : string, id : string, code : string}) : string
-{
+export function jolocomEmailLinkGenerator({
+  receiver, 
+  id, 
+  code
+} : {
+  receiver : string, 
+  id : string, 
+  code : string
+}) : string {
   return [
     'https://staging.wallet.jolocom.com/#/verify-email?email=',
     encodeURIComponent(receiver),
