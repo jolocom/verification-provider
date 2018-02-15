@@ -8,14 +8,13 @@ export interface ConfirmationSender {
   sendConfirmation(params : {
     receiver : string,
     code : string,
-    userdata : any
   }) : Promise<any>
 }
 
 export class MemoryConfirmationSender implements ConfirmationSender {
   public confirmationsSent = []
 
-  async sendConfirmation(params : {receiver : string, code : string, userdata : any}) {
+  async sendConfirmation(params : {receiver : string, code : string }) {
     this.confirmationsSent.push(params)
   }
 }
@@ -54,7 +53,6 @@ export class EmailConfirmationSender implements ConfirmationSender {
   async sendConfirmation(params : {
     receiver : string, 
     code : string, 
-    userdata : any
   }) {
     const link = this.linkGenerator(params)
     const html = this.htmlGenerator({...params, link})
@@ -95,7 +93,6 @@ export class SmsConfirmationSender implements ConfirmationSender {
   async sendConfirmation(params : {
     receiver : string,
     code : string,
-    userdata : any
   }) {
     const bird = messagebird(this.key)
     const message = {

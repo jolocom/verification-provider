@@ -44,11 +44,11 @@ export class Verifier {
       value: attrValue,
       code
     })
+
     // TODO parse receiver
     await this.confirmationSender.sendConfirmation({
       receiver: attrValue,
       code, 
-      userdata: null
     })
   }
 

@@ -26,7 +26,7 @@ export function createApp({
       try {
         await verifier.startVerification({
           identity: req.body.identity,
-          attrValue: req.body[verifier.attrType]
+          attrValue: req.body.claim
         })
         res.send('OK')
       } catch(e) {
