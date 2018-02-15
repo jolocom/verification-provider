@@ -5,13 +5,16 @@ import * as messagebird from 'messagebird'
 import * as mustache from 'mustache'
 
 export interface ConfirmationSender {
-  sendConfirmation(params : {receiver : string, id : string, code : string, userdata : any}) : Promise<any>
+  sendConfirmation(params : {
+    receiver : string,
+    code : string,
+  }) : Promise<any>
 }
 
 export class MemoryConfirmationSender implements ConfirmationSender {
   public confirmationsSent = []
 
-  async sendConfirmation(params : {receiver : string, code : string, userdata : any}) {
+  async sendConfirmation(params : {receiver : string, code : string }) {
     this.confirmationsSent.push(params)
   }
 }
@@ -47,7 +50,10 @@ export class EmailConfirmationSender implements ConfirmationSender {
     this.fromEmail = fromEmail
   }
 
-  async sendConfirmation(params : {receiver : string, id : string, code : string, userdata : any}) {
+  async sendConfirmation(params : {
+    receiver : string, 
+    code : string, 
+  }) {
     const link = this.linkGenerator(params)
     const html = this.htmlGenerator({...params, link})
     const text = this.textGenerator({...params, link})
@@ -66,13 +72,11 @@ export class EmailConfirmationSender implements ConfirmationSender {
 export class SmsConfirmationSender implements ConfirmationSender {
   private key
   private textGenerator
-  private storeResponse
   public lastResponse
 
   constructor({
-    key, 
-    textGenerator, 
-    storeResponse = false
+    key,
+    textGenerator,
   } : {
     key : string, 
     textGenerator : Function, 
@@ -80,25 +84,18 @@ export class SmsConfirmationSender implements ConfirmationSender {
   }) {
     this.key = key
     this.textGenerator = textGenerator
-    this.storeResponse = storeResponse
     this.lastResponse = null
   }
 
   async sendConfirmation(params : {
     receiver : string,
     code : string,
-    userdata : any
   }) {
     const bird = messagebird(this.key)
-    console.log(params.receiver)
-    console.log(params.receiver)
-    console.log(params.receiver)
     const message = {
-      'originator': 'SmartWallet',
-      'recipients': [
-        params.receiver
-      ],
-      'body': this.textGenerator(params)
+      originator: 'SmartWallet',
+      recipients: [ params.receiver ],
+      body: this.textGenerator(params)
     }
 
     const response = await new Promise((resolve, reject) => {
@@ -107,10 +104,6 @@ export class SmsConfirmationSender implements ConfirmationSender {
         resolve(response)
       })
     })
-
-    if (this.storeResponse) {
-      this.lastResponse = response
-    }
   }
 }
 
