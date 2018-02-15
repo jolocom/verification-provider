@@ -1,26 +1,27 @@
 import { AttributeType } from './types'
 
-
 export interface VerificationStorage {
+  retrieveCode(params : {
+    identity : string,
+    attrType : AttributeType
+  }) : Promise<any>
+
   storeCode(params : {
     identity : string,
+    value: string,
     attrType : AttributeType,
-    value : string,
     code : string
   }) : Promise<any>
 
   validateCode(params : {
     identity : string,
     attrType : AttributeType,
-    value : string,
     code : string
   }) : Promise<boolean>
   
   deleteCode(params : {
     identity : string,
     attrType : AttributeType,
-    value : string,
-    code : string
   }) : Promise<any>
 }
 
@@ -33,36 +34,51 @@ export class RedisVerificationStorage implements VerificationStorage {
   ) {
     this.codeLongevityMs = codeLongevityMs
   }
+  async retrieveCode(params : {
+    identity: string,
+    attrType: AttributeType
+  }) : Promise<any> {
+    const key = this.keyFromParams(params)
+    return await this.redisClient.getAsync(key)
+  }
 
   async storeCode(params : {
     identity : string,
-    attrType : AttributeType,
     value : string,
+    attrType : AttributeType,
     code : string
   }) : Promise<void> {
     const expires : number = new Date().getTime() + this.codeLongevityMs
     const key = this.keyFromParams(params)
+    const {code, value} = params
 
-    // PX is expiry time in milliseconds
-    await this.redisClient.setAsync(key, params.code, 'PX', expires.toString())
+    const record = JSON.stringify({code, value})
+    await this.redisClient.setAsync(
+      key, 
+      record,
+      'PX',
+      expires.toString()
+    )
   }
 
   async validateCode(params : {
     identity : string,
     attrType : AttributeType,
-    value : string,
     code : string
   }) : Promise<boolean> {
     const key = this.keyFromParams(params)
-    const storedCode = await this.redisClient.getAsync(key)
-    return params.code === storedCode
+    const record = JSON.parse(await this.redisClient.getAsync(key))
+
+    if (!record) {
+      return false
+    }
+
+    return params.code === record.code
   }
 
   async deleteCode(params : {
     identity : string,
     attrType : AttributeType,
-    value : string,
-    code : string
   }) : Promise<any> {
     const key = this.keyFromParams(params)
     await this.redisClient.delAsync(key)
@@ -70,10 +86,9 @@ export class RedisVerificationStorage implements VerificationStorage {
 
   keyFromParams(params : {
     identity : string,
-    attrType : AttributeType,
-    value : string
+    attrType : AttributeType
   }) : string {
-    const {identity, attrType, value} = params
-    return `jolo-ver-code:${identity}:${attrType}:${value}`
+    const {identity, attrType} = params
+    return `jolo-ver-code:${identity}:${attrType}`
   }
 }

@@ -1,94 +1,100 @@
+import JolocomLib from 'jolocom-lib'
 import { CodeGenerator } from './code-generator';
 import { VerificationStorage } from './verification-storage'
-import { ClaimsStorage } from './claims-storage'
-import { ProfileStorage } from './profile-storage'
 import { ConfirmationSender } from './confirmation-sender'
 import { AttributeType } from './types'
 
 export interface VerifierOptions {
   codeGenerator : CodeGenerator
   verification : VerificationStorage
-  claims : ClaimsStorage
   confirmationSender : ConfirmationSender,
-  attrType : AttributeType
+  attrType : AttributeType,
+  accountEntropy: string
 }
 
 export class Verifier {
   public codeGenerator : CodeGenerator
   public verification : VerificationStorage
-  public claims : ClaimsStorage
-  public profile : ProfileStorage
   public confirmationSender : ConfirmationSender
   public attrType : AttributeType
+  private accountEntropy : string
 
   constructor(params : VerifierOptions) {
     this.codeGenerator = params.codeGenerator
     this.verification = params.verification
-    this.claims = params.claims
     this.confirmationSender = params.confirmationSender
-    this.attrType = params.attrType
+    this.attrType = params.attrType,
+    this.accountEntropy = params.accountEntropy
   }
 
   async startVerification({
-    identity,
-    attrValue
+    claim
   } : {
-    identity: string,
-    attrValue : string
+    claim: any
   }) : Promise<void> {
     const code = this.codeGenerator.generateCode()
+    const {id, phone} = claim.credential.claim
 
     await this.verification.storeCode({
-      identity,
+      identity: id,
+      value: phone,
       attrType: this.attrType,
-      value: attrValue,
       code
     })
 
-    // TODO parse receiver
     await this.confirmationSender.sendConfirmation({
-      receiver: attrValue,
+      receiver: phone,
       code, 
     })
   }
 
   async verify({
     identity,
-    attrId,
-    attrValue,
+    attrType,
     code
   } : {
-    identity : string, 
-    attrId : string, 
-    attrValue : string,
+    identity : string,
+    attrType : string,
     code : string
-  }) : Promise<boolean> {
+  }) : Promise<any> {
     const valid = await this.verification.validateCode({
       identity,
       attrType: this.attrType,
-      value: attrValue,
       code
     })
 
     if (!valid) {
-      return false
+      throw new Error('Invalid code')
     }
 
-    const value = this.attrType === 'phone'
-      ? JSON.stringify([['type', attrValue.split('.')[0]], ['value', attrValue.split('.')[1]]])
-      : JSON.stringify([['value', attrValue]])
-
-    await this.claims.verifyAttribute({
-      identity, 
-      attrType: this.attrType, 
-      attrId,
-      value
+    // TODO CONFIG
+    const jolocomLib = new JolocomLib({
+      identity: {
+        providerUrl: '',
+        contractAddress: ''
+      },
+      ipfs: {
+        host: '',
+        port: 0,
+        protocol: ''
+      }
     })
 
-    await this.verification.deleteCode({
-      identity, attrType: this.attrType, value: attrValue, code
-    })
+    const record = JSON.parse(await this.verification.retrieveCode({
+      identity,
+      attrType: this.attrType
+    }))
 
-    return true
+    const serviceIdentity = jolocomLib.identity.create(this.accountEntropy)
+    const claim =  jolocomLib.claims.createVerifiedCredential(
+      serviceIdentity.didDocument.id,
+      ['phone'],
+      {id: identity, phone: record.phone},
+      serviceIdentity.genericSigningKeyWIF
+    )
+
+    await this.verification.deleteCode({ identity, attrType: this.attrType })
+
+    return claim
   }
 }

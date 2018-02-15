@@ -21,6 +21,7 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "initd-forever": "^0.1.8",
+    "jolocom-lib": "^0.2.0",
     "lodash": "^4.6.1",
     "messagebird": "^2.1.1",
     "mustache": "^2.3.0",

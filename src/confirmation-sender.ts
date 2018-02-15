@@ -72,13 +72,11 @@ export class EmailConfirmationSender implements ConfirmationSender {
 export class SmsConfirmationSender implements ConfirmationSender {
   private key
   private textGenerator
-  private storeResponse
   public lastResponse
 
   constructor({
     key,
     textGenerator,
-    storeResponse = false
   } : {
     key : string, 
     textGenerator : Function, 
@@ -86,7 +84,6 @@ export class SmsConfirmationSender implements ConfirmationSender {
   }) {
     this.key = key
     this.textGenerator = textGenerator
-    this.storeResponse = storeResponse
     this.lastResponse = null
   }
 
@@ -96,9 +93,9 @@ export class SmsConfirmationSender implements ConfirmationSender {
   }) {
     const bird = messagebird(this.key)
     const message = {
-      'originator': 'SmartWallet',
-      'recipients': [ params.receiver ],
-      'body': this.textGenerator(params)
+      originator: 'SmartWallet',
+      recipients: [ params.receiver ],
+      body: this.textGenerator(params)
     }
 
     const response = await new Promise((resolve, reject) => {
@@ -107,10 +104,6 @@ export class SmsConfirmationSender implements ConfirmationSender {
         resolve(response)
       })
     })
-
-    if (this.storeResponse) {
-      this.lastResponse = response
-    }
   }
 }
 

@@ -10,21 +10,18 @@ import {
   jolocomEmailLinkGenerator
 } from './confirmation-sender'
 import { RedisVerificationStorage } from './verification-storage'
-import { MemoryClaimsStorage } from './claims-storage'
 import { Verifier } from './verifier'
 import { createApp } from './app'
-const config = require('../config.json')
 
 const redisClient = redis.createClient()
 bluebird.promisifyAll(redisClient)
-// const config = require('../config.json')
+const config = require('../config.json')
 
 const configureVerifiers = () => {
   const codeLongevityMs = 1000 * 60 * 60 * 2
 
   const phoneVerifier = new Verifier({
     attrType: 'phone',
-    claims: new MemoryClaimsStorage(),
     verification: new RedisVerificationStorage(redisClient, {codeLongevityMs}),
     confirmationSender: new SmsConfirmationSender({
       key: config.messageBirdKey,
@@ -32,6 +29,7 @@ const configureVerifiers = () => {
         'Your SmartWallet verification code: {{code}}'
       )
     }),
+    accountEntropy: config.accountEntropy,
     codeGenerator: new RandomCodeGenerator({
       codeLength: 6,
       digitOnly: true
@@ -40,8 +38,8 @@ const configureVerifiers = () => {
 
   const emailVerifier = new Verifier({
     attrType: 'email',
-    claims: new MemoryClaimsStorage(),
     verification: new RedisVerificationStorage(redisClient, {codeLongevityMs}),
+    accountEntropy: config.accountEntropy,
     confirmationSender: new EmailConfirmationSender({
       transport: {
         sendmail: true,
