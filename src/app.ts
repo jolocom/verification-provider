@@ -10,6 +10,7 @@ export function createApp({
   phoneVerifier : Verifier
 }) {
   const app = express()
+
   app.use(bodyParser.urlencoded({extended: true}))
   app.use(bodyParser.json())
   app.use(function(req, res, next) {
@@ -20,11 +21,11 @@ export function createApp({
 
   const verifiers : Verifier[] = [emailVerifier, phoneVerifier]
   verifiers.forEach((verifier : Verifier) => {
+
     app.post(`/${verifier.attrType}/start-verification`, async (req, res) => {
       try {
         await verifier.startVerification({
           identity: req.body.identity,
-          attrId: req.body.id,
           attrValue: req.body[verifier.attrType]
         })
         res.send('OK')
@@ -56,5 +57,6 @@ export function createApp({
       }
     })
   })
+
   return app
 }

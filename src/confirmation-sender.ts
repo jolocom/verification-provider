@@ -5,7 +5,11 @@ import * as messagebird from 'messagebird'
 import * as mustache from 'mustache'
 
 export interface ConfirmationSender {
-  sendConfirmation(params : {receiver : string, id : string, code : string, userdata : any}) : Promise<any>
+  sendConfirmation(params : {
+    receiver : string,
+    code : string,
+    userdata : any
+  }) : Promise<any>
 }
 
 export class MemoryConfirmationSender implements ConfirmationSender {
@@ -47,7 +51,11 @@ export class EmailConfirmationSender implements ConfirmationSender {
     this.fromEmail = fromEmail
   }
 
-  async sendConfirmation(params : {receiver : string, id : string, code : string, userdata : any}) {
+  async sendConfirmation(params : {
+    receiver : string, 
+    code : string, 
+    userdata : any
+  }) {
     const link = this.linkGenerator(params)
     const html = this.htmlGenerator({...params, link})
     const text = this.textGenerator({...params, link})
@@ -70,8 +78,8 @@ export class SmsConfirmationSender implements ConfirmationSender {
   public lastResponse
 
   constructor({
-    key, 
-    textGenerator, 
+    key,
+    textGenerator,
     storeResponse = false
   } : {
     key : string, 
@@ -90,14 +98,9 @@ export class SmsConfirmationSender implements ConfirmationSender {
     userdata : any
   }) {
     const bird = messagebird(this.key)
-    console.log(params.receiver)
-    console.log(params.receiver)
-    console.log(params.receiver)
     const message = {
       'originator': 'SmartWallet',
-      'recipients': [
-        params.receiver
-      ],
+      'recipients': [ params.receiver ],
       'body': this.textGenerator(params)
     }
 

@@ -7,8 +7,8 @@
     "start": "yarn prepare && yarn dev",
     "dev": "NODE_ENV=dev node build/main.js",
     "devmon": "nodemon --watch build build/main.js",
-    "prepare": "tsc",
-    "prepare:watch": "tsc --watch",
+    "prepare": "./node_modules/.bin/tsc -p ./",
+    "prepare:watch": "yarn run prepare -- -w",
     "typings": "typings",
     "prepare-and-test": "yarn prepare && mocha build/**/*.test.js",
     "test:watch": "mocha -w build/**/*.test.js"

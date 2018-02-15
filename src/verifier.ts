@@ -31,26 +31,22 @@ export class Verifier {
 
   async startVerification({
     identity,
-    attrId,
     attrValue
   } : {
     identity: string,
-    attrId: string,
     attrValue : string
-  }) : Promise<any> {
+  }) : Promise<void> {
     const code = this.codeGenerator.generateCode()
 
-    await this.verification.storeCode({ 
+    await this.verification.storeCode({
       identity,
       attrType: this.attrType,
-      attrId,
       value: attrValue,
       code
     })
-
+    // TODO parse receiver
     await this.confirmationSender.sendConfirmation({
       receiver: attrValue,
-      id: attrId, 
       code, 
       userdata: null
     })
@@ -70,7 +66,6 @@ export class Verifier {
     const valid = await this.verification.validateCode({
       identity,
       attrType: this.attrType,
-      attrId,
       value: attrValue,
       code
     })
@@ -91,7 +86,7 @@ export class Verifier {
     })
 
     await this.verification.deleteCode({
-      identity, attrType: this.attrType, attrId, value: attrValue, code
+      identity, attrType: this.attrType, value: attrValue, code
     })
 
     return true
