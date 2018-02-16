@@ -35,17 +35,18 @@ export class Verifier {
     claim: any
   }) : Promise<void> {
     const code = this.codeGenerator.generateCode()
-    const {id, phone} = claim.credential.claim
+    const id = claim.credential.claim.id
+    const value = claim.credential.claim[this.attrType]
 
     await this.verification.storeCode({
       identity: id,
-      value: phone,
+      value,
       attrType: this.attrType,
       code
     })
 
     await this.confirmationSender.sendConfirmation({
-      receiver: phone,
+      receiver: value,
       code, 
     })
   }
