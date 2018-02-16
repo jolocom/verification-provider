@@ -21,7 +21,6 @@ export class MemoryConfirmationSender implements ConfirmationSender {
 
 export class EmailConfirmationSender implements ConfirmationSender {
   private transporter
-  private linkGenerator
   private htmlGenerator
   private textGenerator
   private subjectGenerator
@@ -31,20 +30,17 @@ export class EmailConfirmationSender implements ConfirmationSender {
     transport, 
     fromEmail, 
     subjectGenerator, 
-    linkGenerator, 
     htmlGenerator, 
     textGenerator
   } : {
     transport : nodemailer.Transport,
     fromEmail : string,
     subjectGenerator : Function,
-    linkGenerator : Function,
     htmlGenerator : Function,
     textGenerator : Function
   }) {
     this.transporter = nodemailer.createTransport(transport)
     this.subjectGenerator = subjectGenerator
-    this.linkGenerator = linkGenerator
     this.htmlGenerator = htmlGenerator
     this.textGenerator = textGenerator
     this.fromEmail = fromEmail
@@ -54,9 +50,8 @@ export class EmailConfirmationSender implements ConfirmationSender {
     receiver : string, 
     code : string, 
   }) {
-    const link = this.linkGenerator(params)
-    const html = this.htmlGenerator({...params, link})
-    const text = this.textGenerator({...params, link})
+    const html = this.htmlGenerator({...params})
+    const text = this.textGenerator({...params})
     const subject = this.subjectGenerator(params)
 
     await this.transporter.sendMail({
@@ -117,23 +112,4 @@ export function loadTemplate(name, engine : (template : string) => ((context : o
   const filePath = path.join(__dirname, '..', 'templates', name)
   const template = fs.readFileSync(filePath).toString()
   return engine(template)
-}
-
-export function jolocomEmailLinkGenerator({
-  receiver, 
-  id, 
-  code
-} : {
-  receiver : string, 
-  id : string, 
-  code : string
-}) : string {
-  return [
-    'https://staging.wallet.jolocom.com/#/verify-email?email=',
-    encodeURIComponent(receiver),
-    '&id=',
-    encodeURIComponent(id),
-    '&code=',
-    encodeURIComponent(code)
-  ].join('')
 }

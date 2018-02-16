@@ -9,7 +9,6 @@ import {
   SmsConfirmationSender,
   mustacheTemplateGenerator,
   loadTemplate,
-  jolocomEmailLinkGenerator
 } from './confirmation-sender'
 import { RedisVerificationStorage } from './verification-storage'
 import { Verifier } from './verifier'
@@ -52,7 +51,6 @@ const configureVerifiers = () => {
       transport: config.emailSettings,
       fromEmail: 'no-reply@mail.jolocom.com',
       subjectGenerator: mustacheTemplateGenerator('Verify your e-mail in your SmartWallet'),
-      linkGenerator: jolocomEmailLinkGenerator,
       htmlGenerator: loadTemplate('verification-email.html', mustacheTemplateGenerator),
       textGenerator: loadTemplate('verification-email.txt', mustacheTemplateGenerator)
     }),
