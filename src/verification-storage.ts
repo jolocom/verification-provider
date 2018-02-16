@@ -26,14 +26,13 @@ export interface VerificationStorage {
 }
 
 export class RedisVerificationStorage implements VerificationStorage {
-  private codeLongevityMs
-
   constructor(
     private redisClient,
-    {codeLongevityMs} : {codeLongevityMs : number}
+    private codeLongevityMs : number
   ) {
-    this.codeLongevityMs = codeLongevityMs
+
   }
+
   async retrieveCode(params : {
     identity: string,
     attrType: AttributeType

@@ -1,4 +1,3 @@
-import JolocomLib from 'jolocom-lib'
 import { CodeGenerator } from './code-generator';
 import { VerificationStorage } from './verification-storage'
 import { ConfirmationSender } from './confirmation-sender'
@@ -9,7 +8,8 @@ export interface VerifierOptions {
   verification : VerificationStorage
   confirmationSender : ConfirmationSender,
   attrType : AttributeType,
-  accountEntropy: string
+  accountEntropy: string,
+  jolocomLib: any
 }
 
 export class Verifier {
@@ -18,6 +18,7 @@ export class Verifier {
   public confirmationSender : ConfirmationSender
   public attrType : AttributeType
   private accountEntropy : string
+  private jolocomLib
 
   constructor(params : VerifierOptions) {
     this.codeGenerator = params.codeGenerator
@@ -25,6 +26,7 @@ export class Verifier {
     this.confirmationSender = params.confirmationSender
     this.attrType = params.attrType,
     this.accountEntropy = params.accountEntropy
+    this.jolocomLib = params.jolocomLib
   }
 
   async startVerification({
@@ -67,34 +69,21 @@ export class Verifier {
       throw new Error('Invalid code')
     }
 
-    // TODO CONFIG
-    const jolocomLib = new JolocomLib({
-      identity: {
-        providerUrl: '',
-        contractAddress: ''
-      },
-      ipfs: {
-        host: '',
-        port: 0,
-        protocol: ''
-      }
-    })
-
     const record = JSON.parse(await this.verification.retrieveCode({
       identity,
       attrType: this.attrType
     }))
 
-    const serviceIdentity = jolocomLib.identity.create(this.accountEntropy)
-    const claim =  jolocomLib.claims.createVerifiedCredential(
+    const serviceIdentity = this.jolocomLib.identity.create(this.accountEntropy)
+
+    const claim =  this.jolocomLib.claims.createVerifiedCredential(
       serviceIdentity.didDocument.id,
-      ['phone'],
-      {id: identity, phone: record.phone},
+      ['Credential', this.attrType],
+      {id: identity, [this.attrType]: record.value},
       serviceIdentity.genericSigningKeyWIF
     )
 
     await this.verification.deleteCode({ identity, attrType: this.attrType })
-
     return claim
   }
 }
