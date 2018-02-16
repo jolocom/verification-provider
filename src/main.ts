@@ -49,11 +49,7 @@ const configureVerifiers = () => {
     verification: verificationStorage,
     accountEntropy: config.accountEntropy,
     confirmationSender: new EmailConfirmationSender({
-      transport: {
-        sendmail: true,
-        newline: 'unix',
-        path: '/usr/sbin/sendmail'
-      },
+      transport: config.emailSettings,
       fromEmail: 'no-reply@mail.jolocom.com',
       subjectGenerator: mustacheTemplateGenerator('Verify your e-mail in your SmartWallet'),
       linkGenerator: jolocomEmailLinkGenerator,
