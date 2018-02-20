@@ -49,7 +49,7 @@ export function createApp({
       } catch (e) {
         console.error(e)
         console.error(e.stack)
-        res.send('Error')
+        res.status(422).send(`Error: ${e.message}`)
       }
     })
   })
