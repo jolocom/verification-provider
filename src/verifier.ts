@@ -1,6 +1,7 @@
 import { CodeGenerator } from './code-generator';
 import { VerificationStorage } from './verification-storage'
 import { ConfirmationSender } from './confirmation-sender'
+import * as moment from 'moment'
 import { AttributeType } from './types'
 
 export interface VerifierOptions {
@@ -77,11 +78,15 @@ export class Verifier {
 
     const serviceIdentity = this.jolocomLib.identity.create(this.accountEntropy)
 
+    const expires = moment.utc().add(1, 'year').format().toString()
     const claim =  this.jolocomLib.claims.createVerifiedCredential(
-      serviceIdentity.didDocument.id,
-      ['Credential', this.attrType],
-      {id: identity, [this.attrType]: record.value},
-      serviceIdentity.genericSigningKeyWIF
+      {
+        issuer: serviceIdentity.didDocument.id,
+        credentialType: ['Credential', this.attrType],
+        claim: {id: identity, [this.attrType]: record.value},
+        privateKeyWIF: serviceIdentity.genericSigningKeyWIF,
+        expires: expires
+      }
     )
 
     await this.verification.deleteCode({ identity, attrType: this.attrType })
