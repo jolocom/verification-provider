@@ -3158,9 +3158,9 @@ jade@0.26.3:
     commander "0.6.1"
     mkdirp "0.3.0"
 
-jolocom-lib@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/jolocom-lib/-/jolocom-lib-0.2.0.tgz#1351a6b3d9ea91901b21eef7b31ad269e7926a04"
+jolocom-lib@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/jolocom-lib/-/jolocom-lib-0.2.4.tgz#2005e61419655c1f4cdcf13b6f8ae912e3c1f842"
   dependencies:
     bip39 "^2.5.0"
     bitcoinjs-lib "^3.3.2"
@@ -3170,6 +3170,7 @@ jolocom-lib@^0.2.0:
     istanbul "^0.4.5"
     jolocom-registry-contract "^0.1.2"
     jsontokens "^0.7.6"
+    moment "^2.20.1"
     nyc "^11.4.1"
     qrcode "^1.2.0"
     secp256k1 "^3.5.0"
@@ -3797,6 +3798,10 @@ mock-fs@^4.1.0:
 moment@^2.11.2:
   version "2.20.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
+
+moment@^2.20.1:
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.21.0.tgz#2a114b51d2a6ec9e6d83cf803f838a878d8a023a"
 
 mout@^0.11.0:
   version "0.11.1"

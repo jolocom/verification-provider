@@ -17,11 +17,12 @@
   "dependencies": {
     "@types/body-parser": "^1.16.3",
     "@types/express": "^4.0.35",
+    "bitcoinjs-lib": "^3.3.2",
     "bluebird": "^3.1.1",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "initd-forever": "^0.1.8",
-    "jolocom-lib": "^0.2.0",
+    "jolocom-lib": "^0.2.4",
     "lodash": "^4.6.1",
     "messagebird": "^2.1.1",
     "mustache": "^2.3.0",
