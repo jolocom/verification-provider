@@ -24,6 +24,7 @@ export function createApp({
 
     app.post(`/${verifier.attrType}/start-verification`, async (req, res) => {
       try {
+        console.log(`Starting ${verifier.attrType} verification.`)
         await verifier.startVerification({ claim: req.body.claim })
         res.send('OK')
       } catch(e) {
@@ -35,6 +36,7 @@ export function createApp({
 
     app.post(`/${verifier.attrType}/finish-verification`, async (req, res) => {
       try {
+        console.log(`Finishing ${verifier.attrType} verification.`)
         const result = await verifier.verify({
           identity: req.body.identity,
           attrType: req.body[verifier.attrType],
@@ -44,7 +46,7 @@ export function createApp({
         if (result) {
           res.json(result)
         } else {
-          res.send('Error')
+          res.status(422).send('Could not verify the code.')
         }
       } catch (e) {
         console.error(e)

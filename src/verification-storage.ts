@@ -18,7 +18,7 @@ export interface VerificationStorage {
     attrType : AttributeType,
     code : string
   }) : Promise<boolean>
-  
+
   deleteCode(params : {
     identity : string,
     attrType : AttributeType,
@@ -58,6 +58,7 @@ export class RedisVerificationStorage implements VerificationStorage {
       'PX',
       expires.toString()
     )
+    console.log(`Code for ${key} stored: ${code}.`)
   }
 
   async validateCode(params : {
@@ -69,8 +70,10 @@ export class RedisVerificationStorage implements VerificationStorage {
     const record = JSON.parse(await this.redisClient.getAsync(key))
 
     if (!record) {
+      console.log(`Code for ${key} could not be retrieved.`)
       return false
     }
+    console.log(`Code for ${key} retrieved: ${record.code}.`)
 
     return params.code === record.code
   }
